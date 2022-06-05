@@ -9,7 +9,6 @@ const REQUEST_OPTIONS = { method: "GET" };
  * @returns list of objects (nfts from user)
  */
 export async function returnNFTsFromUser(walletAdx) {
-  // !DONE
   walletAdx = walletAdx.current.value;
 
   const fetchURL = `${BASE_URL}?owner=${walletAdx}`;
@@ -50,7 +49,6 @@ export async function returnNFTsFromCollection(collectionAdx) {
  * @returns a solved promise from NFT fetch
  */
 export async function returnNFTsCollectionWithinUser(walletAdx, collectionAdx) {
-  // !DONE :D
   walletAdx = walletAdx.current.value;
   collectionAdx = collectionAdx.current.value;
 
