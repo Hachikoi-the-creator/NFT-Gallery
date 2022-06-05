@@ -12,26 +12,14 @@ import {
 // -------- ORIGINAL
 // --------
 const Home = () => {
-  const [walletAddress, setWalletAddress] = useState("");
-  const [collectionAddress, setCollectionAddress] = useState("");
+  const walletAddress = useRef("");
+  const collectionAddress = useRef("");
   const [NFTs, setNFTs] = useState([]);
 
   /**
    * @dev Copied func
    */
-  const fetchNFTs = () => {
-    const nfts = returnNFTRequest(collectionAddress, walletAddress);
-    //? had to do this since returns a promise!
-    nfts.then(
-      (res) => {
-        if (nfts) {
-          console.log("nfts: ", res);
-          setNFTs(res.ownedNfts);
-        }
-      },
-      (err) => console.log(err)
-    );
-  };
+
   //
   //
   //
@@ -40,63 +28,52 @@ const Home = () => {
   return (
     <div className="flex flex-col items-center justify-center py-8 gap-y-3">
       <div className="flex flex-col w-full justify-center items-center gap-y-2">
+        {/* Wallet Address */}
         <input
-          // disabled={fetchForCollection}
+          ref={walletAddress}
           className="w-2/5 bg-slate-100 py-2 px-2 rounded-lg text-gray-800 focus:outline-blue-300 disabled:bg-slate-50 disabled:text-gray-50"
-          onChange={(e) => {
-            setWalletAddress(e.target.value);
-          }}
-          value={walletAddress}
-          type={"text"}
+          type="text"
           placeholder="Add your wallet address"
         ></input>
+
+        {/* Collection Address */}
         <input
+          ref={collectionAddress}
           className="w-2/5 bg-slate-100 py-2 px-2 rounded-lg text-gray-800 focus:outline-blue-300 disabled:bg-slate-50 disabled:text-gray-50"
-          onChange={(e) => {
-            setCollectionAddress(e.target.value);
-          }}
-          value={collectionAddress}
-          type={"text"}
+          type="text"
           placeholder="Add the collection address"
         ></input>
-        <label className="text-gray-600 ">
-          <input
-            onChange={(e) => {
-              setFetchForCollection(e.target.checked);
+
+        {/* btns container */}
+        <div className="flex justify-around md:flex-col">
+          {/* btn to get all NFT's from account */}
+          <button
+            className={btnStyles}
+            onClick={() => {
+              returnNFTsFromUser(walletAddress);
             }}
-            type={"checkbox"}
-            className="mr-2"
-          ></input>
-          Fetch for collection
-        </label>
+          >
+            Get all NFTs the user has
+          </button>
 
-        {/* btn to get all NFT's from account */}
-        <button
-          className={btnStyles}
-          onClick={() => {
-            returnNFTsFromUser(walletAddress);
-          }}
-        >
-          Get all NFTs the user has
-        </button>
+          {/* btn to get all NFTs from given collection */}
+          <button
+            className={btnStyles}
+            onClick={() => returnNFTsFromCollection(collectionAddress)}
+          >
+            Get all NFT from collection
+          </button>
 
-        {/* btn to get all NFTs from given collection */}
-        <button
-          className={btnStyles}
-          onClick={() => returnNFTsFromCollection(collectionAddress)}
-        >
-          Get all NFT from collection
-        </button>
-
-        {/* btn to get all NFTs from collection that user has */}
-        <button
-          className={btnStyles}
-          onClick={() =>
-            returnNFTsCollectionWithinUser(walletAddress, collectionAddress)
-          }
-        >
-          Get all NFT from collection that the user has
-        </button>
+          {/* btn to get all NFTs from collection that user has */}
+          <button
+            className={btnStyles}
+            onClick={() =>
+              returnNFTsCollectionWithinUser(walletAddress, collectionAddress)
+            }
+          >
+            Get all NFT from collection that the user has
+          </button>
+        </div>
       </div>
       {/* nft collection container */}
       <div className="flex flex-wrap gap-y-12 mt-4 w-5/6 gap-x-2 justify-center">

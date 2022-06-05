@@ -1,42 +1,67 @@
 import React from "react";
 
-export async function returnNFTRequest(collectionAddress, walletAddress) {
-  console.log("fetching nfts");
-  let nfts; //store the response object
-  let fetchURL; //store nft to make the request
-  const baseURL = `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}/getNFTs/`;
-  const requestOptions = {
-    method: "GET",
-  };
+const BASE_URL = `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}/getNFTs/`;
+const REQUEST_OPTIONS = { method: "GET" };
 
-  if (!collectionAddress.length) {
-    //? fetch all nft linked to Y address
-    fetchURL = `${baseURL}?owner=${walletAddress}`;
-  } else {
-    //? fetching nfts of X collection owned by Y address
-    console.log("else statement runing");
-    fetchURL = `${baseURL}?owner=${walletAddress}&contractAddresses%5B%5D=${collectionAddress}`;
-  }
+/**
+ * @dev (btn1) returns a list of all NFT owned by user
+ * @param {*} walletAdx
+ * @returns list of objects (nfts from user)
+ */
+export async function returnNFTsFromUser(walletAdx) {
+  // !DONE
+  walletAdx = walletAdx.current.value;
 
-  nfts = await fetch(fetchURL, requestOptions).then((data) => data.json());
+  const fetchURL = `${BASE_URL}?owner=${walletAdx}`;
 
-  return nfts;
-}
-//nfts from user -  fetchURL = `${baseURL}?owner=${walletAddress}`
-//nfts from collection
-// nft from collection && user - fetchURL = `${baseURL}?owner=${walletAddress}&contractAddresses%5B%5D=$
+  const nfts = await fetch(fetchURL, REQUEST_OPTIONS)
+    .then((data) => data.json())
+    .catch((e) => {
+      console.error(e);
+      return -1;
+    });
 
-// btn1 handeler, //! return a list of objects
-export function returnNFTsFromUser(resObject = {}) {
-  console.log("function 1");
+  console.log(nfts);
 }
 
-// btn2 handeler
-export function returnNFTsFromCollection(resObject = {}) {
-  console.log("function 2");
+/**
+ * @dev (btn2) returns an array of NFT from a collection
+ * @param {*} collectionAdx
+ */
+export async function returnNFTsFromCollection(collectionAdx) {
+  collectionAdx = collectionAdx.current.value;
+
+  const newBaseURL = `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}/getNFTsForCollection/`;
+  const fetchURL = `${newBaseURL}?contractAddress=${collectionAdx}&withMetadata=true`;
+
+  const nfts = await fetch(fetchURL, REQUEST_OPTIONS)
+    .then((data) => data.json())
+    .catch((e) => {
+      console.log(e);
+    });
+
+  console.log(nfts);
 }
 
-// btn3 handeler
-export function returnNFTsCollectionWithinUser(resObject = {}) {
-  console.log("function 3");
+/**
+ * @dev (btn3) formats API request and return a solved promise or -1 if failed
+ * @param {*} walletAdx user address the user gave us
+ * @param {*} collectionAdx NFT collection address the user gave us
+ * @returns a solved promise from NFT fetch
+ */
+export async function returnNFTsCollectionWithinUser(walletAdx, collectionAdx) {
+  // !DONE :D
+  walletAdx = walletAdx.current.value;
+  collectionAdx = collectionAdx.current.value;
+
+  const fetchURL = `${BASE_URL}?owner=${walletAdx}&contractAddresses%5B%5D=${collectionAdx}`;
+
+  const nfts = await fetch(fetchURL, REQUEST_OPTIONS)
+    .then((data) => data.json())
+    .catch((e) => {
+      console.error(e);
+      return -1;
+    });
+
+  console.log(nfts);
 }
