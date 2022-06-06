@@ -1,3 +1,5 @@
+import { copyTextToClipboard } from "../utils/clipboardFunc";
+
 export const NFTCard = ({ title, imgUrl, adx, desc, id }) => {
   return (
     <div className="w-1/4 flex flex-col ">
@@ -13,7 +15,13 @@ export const NFTCard = ({ title, imgUrl, adx, desc, id }) => {
           <h2 className="text-xl text-gray-800">{title}</h2>
           <p className="text-gray-600">Id: {id}</p>
           <p className="text-gray-600">
-            {`${adx.slice(0, 7)}...${adx.slice(adx.length - 4)}`}
+            {`${adx.slice(0, 7)}...${adx.slice(adx.length - 4)}`}{" "}
+            <span>
+              <a href="#" onClick={() => copyTextToClipboard(adx)}>
+                {" "}
+                &#x1f4cb;
+              </a>
+            </span>
           </p>
         </div>
 
