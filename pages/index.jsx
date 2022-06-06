@@ -2,11 +2,10 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState, useRef } from "react";
 import {
-  returnNFTRequest,
   returnNFTsFromUser,
   returnNFTsFromCollection,
   returnNFTsCollectionWithinUser,
-} from "../utils/functions";
+} from "../utils/fetchFunctions";
 import NFTCard from "../components/NFTCard";
 // 0x4cE21c543C0CFb33BFb750831F6177c97950c054 - random address
 // --------
@@ -22,24 +21,44 @@ const Home = () => {
    * run exeternal function,
    * update the NFTs state variable
    */
+  //!DONE
   function handleAllNFTsFromUser() {
-    if (walletAddress.current.value) {
-      const nfts = returnNFTsFromUser(walletAddress);
-      setNFTs(nfts);
+    const currentVal = walletAddress.current.value;
+    if (currentVal) {
+      // returns solved promise [{nftProps},{nftProps}]
+      const nfts = returnNFTsFromUser(currentVal);
+      console.log(currentVal);
+
+      nfts
+        .then((res) => {
+          console.log("len ", res.length, "nfts: ", res);
+          setNFTs(res);
+        })
+        .catch((err) => console.log(err));
     } else {
       window.alert("Please fill up the input whit a wallet addres");
     }
   }
 
   /**
-   * @dev (btn3)check if the collectionAddress has a value,
+   * @dev (btn2)check if the collectionAddress has a value,
    * run exeternal function,
    * update the NFTs state variable
    */
+  // !DONE
   function handleAllNFTFromCollection() {
-    if (walletAddress.current.value) {
-      const nfts = returnNFTsCollectionWithinUser(collectionAddress);
-      setNFTs(nfts);
+    const currentVal = collectionAddress.current.value;
+
+    if (currentVal) {
+      // returns solved promise [{nftProps},{nftProps}]
+      const nfts = returnNFTsFromCollection(currentVal);
+
+      nfts
+        .then((res) => {
+          console.log("len ", res.length, "nfts: ", res);
+          setNFTs(res);
+        })
+        .catch((err) => console.log(err));
     } else {
       window.alert(
         "Please fill up the input whit a wallet addres && collection address"
@@ -48,14 +67,24 @@ const Home = () => {
   }
 
   /**
-   * @dev (btn2)check if both inputs have a value,
+   * @dev (btn3)check if both inputs have a value,
    * run exeternal function,
    * update the NFTs state variable
    */
   function handleNFTsWithinWalletFromCollection() {
-    if (walletAddress.current.value && collectionAddress.current.value) {
-      const nfts = returnNFTsFromCollection(walletAddress);
-      setNFTs(nfts);
+    const currentAdx = walletAddress.current.value;
+    const currentColect = collectionAddress.current.value;
+
+    if (currentAdx && currentColect) {
+      const nfts = returnNFTsCollectionWithinUser(currentAdx, currentColect);
+      console.log(nfts);
+
+      nfts
+        .then((res) => {
+          console.log("len ", res.length, "nfts: ", res);
+          setNFTs(res);
+        })
+        .catch((err) => console.log(err));
     } else {
       window.alert("Please fill up the input whit a wallet addres");
     }
@@ -110,10 +139,17 @@ const Home = () => {
       </div>
       {/* nft collection container */}
       <div className="flex flex-wrap gap-y-12 mt-4 w-5/6 gap-x-2 justify-center">
-        {NFTs.length &&
-          NFTs.map((nftObject) => {
-            return <NFTCard nft={nftObject}></NFTCard>;
-          })}
+        {NFTs.map((NftObject, index) => (
+          <NFTCard
+            key={index}
+            id={index}
+            imgUrl={NftObject.imgUrl}
+            adx={NftObject.contractAddress}
+            title={NftObject.title}
+            desc={NftObject.desc}
+          />
+        ))}
+        {/* {moreTest} */}
       </div>
     </div>
   );

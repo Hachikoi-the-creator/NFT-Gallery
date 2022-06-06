@@ -1,4 +1,4 @@
-import React from "react";
+import NFTCard from "../components/NFTCard";
 
 const BASE_URL = `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}/getNFTs/`;
 const REQUEST_OPTIONS = { method: "GET" };
@@ -9,8 +9,6 @@ const REQUEST_OPTIONS = { method: "GET" };
  * @returns list of objects (nfts from user)
  */
 export async function returnNFTsFromUser(walletAdx) {
-  walletAdx = walletAdx.current.value;
-
   const fetchURL = `${BASE_URL}?owner=${walletAdx}`;
 
   const nfts = await fetch(fetchURL, REQUEST_OPTIONS)
@@ -20,7 +18,7 @@ export async function returnNFTsFromUser(walletAdx) {
       return -1;
     });
 
-  console.log(nfts);
+  return NFTCardFormatedProps(nfts.ownedNfts);
 }
 
 /**
@@ -28,8 +26,6 @@ export async function returnNFTsFromUser(walletAdx) {
  * @param {*} collectionAdx
  */
 export async function returnNFTsFromCollection(collectionAdx) {
-  collectionAdx = collectionAdx.current.value;
-
   const newBaseURL = `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}/getNFTsForCollection/`;
   const fetchURL = `${newBaseURL}?contractAddress=${collectionAdx}&withMetadata=true`;
 
@@ -39,7 +35,7 @@ export async function returnNFTsFromCollection(collectionAdx) {
       console.log(e);
     });
 
-  console.log(nfts);
+  return NFTCardFormatedProps(nfts.nfts);
 }
 
 /**
@@ -49,9 +45,6 @@ export async function returnNFTsFromCollection(collectionAdx) {
  * @returns a solved promise from NFT fetch
  */
 export async function returnNFTsCollectionWithinUser(walletAdx, collectionAdx) {
-  walletAdx = walletAdx.current.value;
-  collectionAdx = collectionAdx.current.value;
-
   const fetchURL = `${BASE_URL}?owner=${walletAdx}&contractAddresses%5B%5D=${collectionAdx}`;
 
   const nfts = await fetch(fetchURL, REQUEST_OPTIONS)
@@ -61,5 +54,34 @@ export async function returnNFTsCollectionWithinUser(walletAdx, collectionAdx) {
       return -1;
     });
 
-  console.log(nfts);
+  // console.log(nfts.lenght, nfts.ownedNfts);
+  return NFTCardFormatedProps(nfts.ownedNfts);
+}
+
+//
+// - format outputs func
+//
+/**
+ * @dev something cool :D
+ * @param NftsArray an array of objects containing all the data of the NFT
+ * @returns an Array of <NFTCard />'s
+ */
+export function NFTCardFormatedProps(NftsArray = []) {
+  const arrayOfProps = NftsArray.map((nftObject, index) => {
+    //cast to make it more legible
+    const descCast = nftObject.description;
+    const idCast = nftObject.contract.address;
+
+    // variables to return
+    const imgUrl = nftObject.media[0].gateway;
+    const title = nftObject.title;
+    const contractAddress = nftObject.contract.address.toLowerCase();
+    const desc = descCast
+      ? `${descCast.substr(0, 150)}...`
+      : "Theres no description";
+
+    return { imgUrl, title, contractAddress, desc };
+  });
+
+  return arrayOfProps;
 }
